@@ -13,7 +13,15 @@ const pantryController = {
             console.log(data.unitType);
             console.log(data.threshold);
             console.log(data.expirationDate);
-        
+            
+        // const {name, category, quantity, unitType, threshold, expirationDate} = req.body;
+            //data validation for required items
+                if (!data.name || !data.quantity) {
+                    return next("Enter the required information (name & quantity)")
+                };
+            //data validation for data types
+
+
             const newPantryItem = await PantryItem.create({
                 name: data.name,
                 category: data.category,
