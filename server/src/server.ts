@@ -1,9 +1,5 @@
 
 import dotenv, { config } from 'dotenv';
-import express, { Express, Request, Response } from 'express';
-import cors from 'cors';
-import mongoose from 'mongoose';
-
 import express, { Express, Request, Response , NextFunction} from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
