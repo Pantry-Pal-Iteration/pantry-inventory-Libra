@@ -1,4 +1,8 @@
-import dotenv from 'dotenv';
+
+import dotenv, { config } from 'dotenv';
+import express, { Express, Request, Response } from 'express';
+import cors from 'cors';
+import mongoose from 'mongoose';
 
 import express, { Express, Request, Response , NextFunction} from 'express';
 import cors from 'cors';
@@ -18,13 +22,14 @@ const PORT: string | number = process.env.PORT || 3000;
 const uri: string | any =
     process.env.MONGODB_URI;
 
+
 (async () => {
-    try {
-        await mongoose.connect(uri);
-        console.log('Connected to the database');
-    } catch(error) {
-        console.error(error);
-    }
+  try {
+    await mongoose.connect(uri);
+    console.log('Connected to the database');
+  } catch (error) {
+    console.error(error);
+  }
 })();
 const pantryRouter = express.Router();
 
@@ -57,7 +62,7 @@ pantryRouter.post('/create', pantryController.createPantryItem, (req:Request, re
 
 //health check
 app.get('/health', (_req: Request, res: Response) => {
-    res.status(200).send('Server is running');
+  res.status(200).send('Server is running');
 });
 
 
@@ -77,5 +82,5 @@ app.use((req, res) =>
   
 
 app.listen(PORT, () => {
-    console.log(`Server is running on PORT: ${PORT}`);
+  console.log(`Server is running on PORT: ${PORT}`);
 });
