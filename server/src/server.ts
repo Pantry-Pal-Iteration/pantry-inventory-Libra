@@ -3,10 +3,11 @@ import dotenv, { config } from 'dotenv';
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
-// require('dotenv').config();
 
-// import process from 'process';
 
+dotenv.config();
+
+const MONGO_URI = process.env.PG_URI || 'mongodb://localhost:27017/groceryDB'; */
 dotenv.config();
 
 const app: Express = express();
