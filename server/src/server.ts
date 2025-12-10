@@ -31,6 +31,12 @@ const pantryRouter = express.Router();
 //home page
 app.use('/', pantryRouter);
 
+
+//getPantryItem */
+pantryRouter.get('/:name', pantryController.getPantryItem, (req:Request, res: Response) => {
+    res.status(200).json(res.locals.pantryItem);
+    
+})
 //getting the full inventory
 pantryRouter.get('/', pantryController.getPantryInventory, (req:Request, res: Response) => {
     res.status(200).send('testing get request'+ res.locals.inventory);
@@ -41,16 +47,13 @@ pantryRouter.get('/', pantryController.getPantryInventory, (req:Request, res: Re
 pantryRouter.get('/inventory', pantryController.getPantryInventory, (req:Request, res: Response) => {
     res.redirect('/')
 })
+
 //create pantry item
 pantryRouter.post('/create', pantryController.createPantryItem, (req:Request, res: Response) => {
     res.status(201).json(res.locals.newPantryItem);
     
 })
-//**STRETCH** getPantryItem */
-pantryRouter.get('/:item', pantryController.getPantryItem, (req:Request, res: Response) => {
-    res.status(200).json(res.locals.pantryItem);
-    
-})
+
 
 //health check
 app.get('/health', (_req: Request, res: Response) => {
