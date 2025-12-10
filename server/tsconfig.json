@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2016",
+    "target": "es2020",
     "jsx": "preserve",
     "module": "commonjs",
     "allowJs": true,
@@ -10,7 +10,8 @@
     "strict": true,
     "skipLibCheck": true,
     "noEmit": false,
-    "noEmitOnError": false
+    "noEmitOnError": false,
+    "allowSyntheticDefaultImports": true
   },
   "exclude": ["node_modules", "dist", "client"]
 }

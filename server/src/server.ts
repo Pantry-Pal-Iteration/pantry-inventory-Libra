@@ -1,7 +1,8 @@
+import dotenv, { config } from 'dotenv';
+// import 'dotenv/config';
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import dotenv, { config } from 'dotenv';
 // require('dotenv').config();
 
 // import process from 'process';
@@ -13,11 +14,7 @@ const app: Express = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// const uri: string = process.env.MONGODB_URI;
-
 const uri = `mongodb+srv://lawrenzolue_db_user:JKLzqiO8GtfgnIFm@inventory-cluster.rja5yup.mongodb.net/?appName=Inventory-Cluster`;
-
-console.log('process: ' + process.env.MONGODB_URI);
 
 (async () => {
   try {
