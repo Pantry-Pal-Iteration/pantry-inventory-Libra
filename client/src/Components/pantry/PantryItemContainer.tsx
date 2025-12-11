@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import './pantry.css'
 // import PantryItem from '.pantry/PantryItem.tsx';
-import PantryItem from './PantryItem.tsx'
+import PantryItem from './PantryItem.tsx';
 
 interface PantryItemType {
   _id?: string;
@@ -13,13 +13,12 @@ interface PantryItemType {
   expirationDate?: Date;
 }
 
-
 const PantryItemContainer = () => {
   const [pItems, setPItems] = useState<PantryItemType[]>([]);
 
   useEffect(() => {
     async function getPantryItems() {
-      const response = await fetch('http://localhost:3000'); 
+      const response = await fetch('http://localhost:3000');
       if (!response.ok) {
         const message = `An error occurred: ${response.statusText}`;
         console.error(message);
@@ -33,14 +32,14 @@ const PantryItemContainer = () => {
   }, []);
 
   console.log(`Items: ${pItems}`);
- 
+
   return (
     <div className='pantry-container'>
-               {pItems.map((pItem) => (
+      {pItems.map((pItem) => (
         <PantryItem key={pItem._id} pantryItem={pItem} />
       ))}
     </div>
-  )
-}
+  );
+};
 
-export default PantryItemContainer
+export default PantryItemContainer;

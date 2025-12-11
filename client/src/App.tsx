@@ -1,9 +1,8 @@
 
-import Header from './components/header/Header'
-import CreatePantryItemContainer from './components/create-container/CreatePantryItemContainer'
-import Footer from './components/footer/Footer'
-import PantryItemContainer from './components/pantry/PantryItemContainer'
-import styles from 'client/src/components/header/header.css'
+import Header from './Components/header/Header'
+import CreatePantryItemContainer from './Components/create-container/CreatePantryItemContainer'
+import Footer from './Components/footer/Footer'
+import PantryItemContainer from './Components/pantry/PantryItemContainer'
 
 
 

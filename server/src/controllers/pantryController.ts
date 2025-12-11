@@ -1,22 +1,40 @@
 import PantryItem from '../models/pantryModel';
 import { ErrorRequestHandler, Request, Response, NextFunction } from 'express';
+import { body, validationResult } from 'express-validator';
 
 //create controller
 const pantryController = {
+  validatePantryItem: [
+    body('quantity').isNumeric().withMessage('Quantity must be a number'),
+    body('expirationDate')
+      .optional({ checkFalsy: true })
+      .isISO8601()
+      .withMessage('Expeiration Date must be a valid YYYY-MM-DD format')
+      .toDate(),
+  ],
+
   async createPantryItem(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next({
+        log: 'Validation error in createPantryItem',
+        status: 400,
+        message: { errors: errors.array() },
+      });
+    }
     try {
       const data = req.body;
-      console.log(data);
-      console.log(data.name);
-      console.log(data.category);
-      console.log(data.quantity);
-      console.log(data.unitType);
-      console.log(data.threshold);
-      console.log(data.expirationDate);
+      // console.log(data);
+      // console.log(data.name);
+      // console.log(data.category);
+      // console.log(data.quantity);
+      // console.log(data.unitType);
+      // console.log(data.threshold);
+      // console.log(data.expirationDate);
 
       // const {name, category, quantity, unitType, threshold, expirationDate} = req.body;
       //data validation for required items
@@ -69,9 +87,58 @@ const pantryController = {
       return next(err);
     }
   },
-};
 
-//update: Patch(stretch)
-//delete: delete pantryItem (stretch)
+  //update: Patch(stretch)
+  async updatePantryItem(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const currentItem = req.params.name;
+      const updates = req.body;
+
+      const updatedPantryItem = await PantryItem.findOneAndUpdate(
+        { name: currentItem },
+        { $set: updates },
+        { new: true }
+      );
+
+      if (!updatedPantryItem) {
+        res
+          .status(404)
+          .json({ message: `Pantry item ${currentItem} not found.` });
+        return;
+      }
+      res.locals.updatedPantryItem = updatedPantryItem;
+      return next();
+    } catch (err) {
+      return next(err);
+    }
+  },
+
+  async deletePantryItem(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const name = req.params.name;
+      const deletedPantryItem = await PantryItem.findOneAndDelete({
+        name: name,
+      });
+      console.log(deletedPantryItem);
+      if (!deletedPantryItem) {
+        res.status(404).json({ message: `Pantry item ${name} not found.` });
+        return;
+      }
+      console.log(`Deleted: ${deletedPantryItem}`);
+      res.locals.deletedPantryItem = deletedPantryItem;
+      return next();
+    } catch (err) {
+      return next(err);
+    }
+  },
+};
 
 export default pantryController;
