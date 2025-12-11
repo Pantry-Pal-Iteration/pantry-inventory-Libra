@@ -67,7 +67,7 @@ const CreatePantryItemForm = () => {
         <input {...register('threshold')} type='text' placeholder='Threshold' />
         <input
           {...register('expirationDate')}
-          type='date'
+          type='string'
           placeholder='Expiration Date'
         />
         <button disabled={isSubmitting} type='submit'>
