@@ -4,14 +4,14 @@ import { body, validationResult } from 'express-validator';
 
 //create controller
 const pantryController = {
-  validatePantryItem: [
-    body('quantity').isNumeric().withMessage('Quantity must be a number'),
-    body('expirationDate')
-      .optional({ checkFalsy: true })
-      .isISO8601()
-      .withMessage('Expeiration Date must be a valid YYYY-MM-DD format')
-      .toDate(),
-  ],
+  // validatePantryItem: [
+  //   body('quantity').isNumeric().withMessage('Quantity must be a number'),
+  //   body('expirationDate')
+  //     .optional({ checkFalsy: true })
+  //     .isISO8601()
+  //     .withMessage('Expiration Date must be a valid YYYY-MM-DD format')
+  //     .toDate(),
+  // ],
 
   async createPantryItem(
     req: Request,
@@ -49,7 +49,7 @@ const pantryController = {
         quantity: data.quantity,
         unitType: data.unitType,
         threshold: data.threshold,
-        expirationDate: data.expirationDate,
+        // expirationDate: data.expirationDate,
       });
       res.locals.newPantryItem = newPantryItem;
       return next();
