@@ -42,15 +42,29 @@ pantryRouter.get(
   '/',
   pantryController.getPantryInventory,
   (req: Request, res: Response) => {
-    res.status(200).send('testing get request' + res.locals.inventory);
+    res.status(200).json('testing get request' + res.locals.inventory);
   }
 );
 
-pantryRouter.patch('/:name', pantryController.updatePantryItem, (req:Request, res:Response) => {
-  
-}) 
+// //updating pantry items
+// pantryRouter.patch(
+//   '/:name',
+//   pantryController.updatePantryItem,
+//   (req: Request, res: Response) => {
+//     res.status(201).json(res.locals.updatedPantryItem);
+//   }
+// );
 
-
+// //delete pantry item
+// pantryRouter.delete(
+//   '/:name',
+//   pantryController.deletePantryItem,
+//   (req, res, next) => {
+//     res
+//       .status(200)
+//       .send(`${res.locals.deletedPantryItem} deleted successfully`);
+//   }
+// );
 
 //redirecting to full inventory
 pantryRouter.get(
@@ -69,8 +83,6 @@ pantryRouter.post(
     res.status(201).json(res.locals.newPantryItem);
   }
 );
-
-
 
 //health check
 app.get('/health', (_req: Request, res: Response) => {
