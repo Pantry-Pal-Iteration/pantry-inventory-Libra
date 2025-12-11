@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import styles from './pantry.css';
+import { useState, useEffect } from 'react'
+import './pantry.css'
 // import PantryItem from '.pantry/PantryItem.tsx';
 import PantryItem from './PantryItem.tsx';
 

@@ -1,0 +1,28 @@
+.pantry-container {
+background-color: var(--primary-action-color);
+display: flex;
+flex-wrap: wrap;
+justify-content: center;
+gap: 40px;
+}
+
+.pantry-card {
+ padding: 2em;
+ background: var(--background-color);
+ border-radius: 8px;
+ box-shadow: 0 2px 8px rgba(0, 0,0,0.1);
+ color: var(--text-icons-color);
+ width: 70%;
+ max-width: 400px;
+ margin: 20px;
+}
+ ul {
+    list-style-type: none;
+ }
+.name {
+
+}
+
+.listItem {
+
+}

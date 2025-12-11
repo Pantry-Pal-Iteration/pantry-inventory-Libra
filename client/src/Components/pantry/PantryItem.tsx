@@ -1,4 +1,4 @@
-import styles from './pantry.css';
+import './pantry.css';
 
 interface PantryItemType {
   _id?: string;
