@@ -53,26 +53,6 @@ pantryRouter.get(
   }
 );
 
-//updating pantry items
-pantryRouter.patch(
-  '/:name',
-  pantryController.updatePantryItem,
-  (req: Request, res: Response) => {
-    res.status(201).json(res.locals.updatedPantryItem);
-  }
-);
-
-//delete pantry item
-pantryRouter.delete(
-  '/:name',
-  pantryController.deletePantryItem,
-  (req, res, next) => {
-    res
-      .status(200)
-      .send(`${res.locals.deletedPantryItem} deleted successfully`);
-  }
-);
-
 //redirecting to full inventory
 pantryRouter.get(
   '/inventory',
@@ -95,6 +75,26 @@ pantryRouter.post(
 app.get('/health', (_req: Request, res: Response) => {
   res.status(200).send('Server is running');
 });
+
+//updating pantry items
+pantryRouter.patch(
+  '/:name',
+  pantryController.updatePantryItem,
+  (req: Request, res: Response) => {
+    res.status(201).json(res.locals.updatedPantryItem);
+  }
+);
+
+//delete pantry item
+pantryRouter.delete(
+  '/:name',
+  pantryController.deletePantryItem,
+  (req, res, next) => {
+    res
+      .status(200)
+      .send(`${res.locals.deletedPantryItem} deleted successfully`);
+  }
+);
 
 app.use((req, res) =>
   res.status(404).send("This is not the page you're looking for...")
