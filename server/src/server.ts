@@ -41,7 +41,7 @@ pantryRouter.get('/:name', pantryController.getPantryItem, (req:Request, res: Re
 //getting the full inventory
 pantryRouter.get('/', pantryController.getPantryInventory, (req:Request, res: Response) => {
     res.status(200).send('testing get request'+ res.locals.inventory);
-
+//above, the .send being chaged to .json allows it to be looked at on the front end, but as .send only shows in terminal
 })
 
 //redirecting to full inventory
