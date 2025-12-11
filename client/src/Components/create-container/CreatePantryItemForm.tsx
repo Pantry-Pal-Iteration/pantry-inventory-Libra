@@ -18,7 +18,11 @@ const CreatePantryItemForm = () => {
   //   console.log(data);
   // };
 
-  const { register, handleSubmit } = useForm<FormFields>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormFields>();
 
   const onSubmit: SubmitHandler<FormFields> = (data) => {
     console.log(data);
@@ -27,9 +31,21 @@ const CreatePantryItemForm = () => {
     <>
       <div>CreatePantryItemForm</div>
       <form className='create-form' onSubmit={handleSubmit(onSubmit)}>
-        <input {...register('name')} type='text' placeholder='Item Name' />
+        <input
+          {...register('name', {
+            required: true,
+          })}
+          type='text'
+          placeholder='Item Name'
+        />
         <input {...register('category')} type='text' placeholder='Category' />
-        <input {...register('quantity')} type='number' placeholder='Quantity' />
+        <input
+          {...register('quantity', {
+            required: true,
+          })}
+          type='number'
+          placeholder='Quantity'
+        />
         <input {...register('unitType')} type='text' placeholder='Unit Type' />
         <input {...register('threshold')} type='text' placeholder='Threshold' />
         <input
