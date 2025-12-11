@@ -1,7 +1,9 @@
 import dotenv, { config } from 'dotenv';
 import express, { Express, Request, Response, NextFunction } from 'express';
+import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
+import pantryController from './controllers/pantryController';
 import pantryController from './controllers/pantryController';
 dotenv.config();
 
@@ -38,6 +40,10 @@ pantryRouter.get(
 );
 
 //getting the full inventory
+pantryRouter.get('/', pantryController.getPantryInventory, (req:Request, res: Response) => {
+    res.status(200).json(res.locals.inventory);
+
+})
 pantryRouter.get(
   '/',
   pantryController.getPantryInventory,
