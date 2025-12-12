@@ -10,7 +10,7 @@ interface PantryItemType {
   quantity: number;
   unitType?: string;
   threshold?: number;
-  expirationDate?: Date;
+  expirationDate?: string;
 }
 
 const PantryItemContainer = () => {

@@ -15,7 +15,7 @@ type FormFields = {
   quantity: number;
   unitType?: string;
   threshold?: number;
-  expirationDate?: Date;
+  // expirationDate?: Date;
 };
 
 const CreatePantryItemForm = () => {
@@ -46,7 +46,6 @@ const CreatePantryItemForm = () => {
   };
   return (
     <>
-      <div>CreatePantryItemForm</div>
       <form className='create-form' onSubmit={handleSubmit(onSubmit)}>
         <input
           {...register('name', {
@@ -65,11 +64,11 @@ const CreatePantryItemForm = () => {
         />
         <input {...register('unitType')} type='text' placeholder='Unit Type' />
         <input {...register('threshold')} type='text' placeholder='Threshold' />
-        <input
+        {/* <input
           {...register('expirationDate')}
           type='date'
           placeholder='Expiration Date'
-        />
+        /> */}
         <button disabled={isSubmitting} type='submit'>
           {isSubmitting ? 'Filling your pantry!' : 'Submit'}
         </button>
