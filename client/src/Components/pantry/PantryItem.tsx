@@ -8,7 +8,10 @@ interface PantryItemType {
   unitType?: string;
   threshold?: number;
   // expirationDate?: string;
-}
+  onButtonClick?: () => void;
+  // buttonText?: string;
+  buttonDisabled?: boolean;
+  }
 
 interface PantryItemProps {
   pantryItem: PantryItemType;
@@ -28,22 +31,36 @@ interface PantryItemProps {
 
 const PantryItem = ({ pantryItem }: PantryItemProps) => {
   // deconstruct pantryItem
-  const { name, category, quantity, unitType, threshold } =
+  const { name, category, quantity, unitType, threshold, onButtonClick, buttonDisabled = false } =
     pantryItem;
 
-    // added conditional rendering for optional items
+    
+    const handleClick = () => {
+      if (onButtonClick) {
+        onButtonClick();
+      }
+     console.log("button works"); 
+    }
   return (
     <>
       <article className='pantry-card'>
         
-          <h3 className='name'>Item name: { name }</h3>
+          <h3 className='name'> { name.toUpperCase() }</h3>
           <ul className='listItems'>
-            {category && <li className='category'>Category: { category }</li>}
+            {category && <li className='category'>Category: { category.toLowerCase() }</li>}
             <li className='quantity'>Quantity: { quantity }</li>
-           {unitType && <li className='unitType'>Unit Type: { unitType }</li>}
-            {threshold && <li className='threshold'>Buy more if quantity is less than { threshold }</li>}
+           {unitType && <li className='unitType'>Unit: { unitType.toLowerCase() }</li>}
+            {threshold && <li className='threshold'>Buy more if you have less than { threshold }</li>}
            {/* {expirationDate && <li className='expirationDate'>Expiration date: { formatExpirationDate(expirationDate) }</li>} */}
           </ul>
+          <div className="button-container">
+           <button onClick={handleClick}
+          disabled={buttonDisabled}
+          className="button">Update Item</button>
+          <button onClick={handleClick}
+          disabled={buttonDisabled}
+          className="button">Delete Item</button>
+          </div>
         
       </article>
     </>

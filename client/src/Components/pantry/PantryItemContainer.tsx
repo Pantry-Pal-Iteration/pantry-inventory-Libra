@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import './pantry.css'
-// import PantryItem from '.pantry/PantryItem.tsx';
+
 import PantryItem from './PantryItem.tsx';
 
 interface PantryItemType {
@@ -10,7 +10,7 @@ interface PantryItemType {
   quantity: number;
   unitType?: string;
   threshold?: number;
-  expirationDate?: string;
+  // expirationDate?: string;
 }
 
 const PantryItemContainer = () => {

@@ -5,7 +5,6 @@ import Footer from './components/footer/Footer'
 import PantryItemContainer from './components/pantry/PantryItemContainer'
 
 
-
 import './App.css'
 
 function App() {

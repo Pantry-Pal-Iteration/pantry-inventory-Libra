@@ -28,13 +28,7 @@ const pantryController = {
     }
     try {
       const data = req.body;
-      // console.log(data);
-      // console.log(data.name);
-      // console.log(data.category);
-      // console.log(data.quantity);
-      // console.log(data.unitType);
-      // console.log(data.threshold);
-      // console.log(data.expirationDate);
+     
 
       // const {name, category, quantity, unitType, threshold, expirationDate} = req.body;
       //data validation for required items

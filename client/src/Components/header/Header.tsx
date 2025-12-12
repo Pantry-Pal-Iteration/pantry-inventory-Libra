@@ -8,7 +8,7 @@ const Header = () => {
         <h1>🐶Pantry Pal</h1>
         <div className='slogan'>
           <h2>
-            <em>To help you fetch your groceries</em>
+            <em>Helping you fetch your groceries</em>
           </h2>
         </div>
       </div>

@@ -19,10 +19,17 @@ gap: 40px;
  ul {
     list-style-type: none;
  }
-.name {
 
-}
-
-.listItem {
-
-}
+ .button-container {
+    display: flex;
+    justify-content: space-between;
+ }
+ .button {
+    padding: .35em;
+    margin-right: 2em;
+    margin-left: 2em;
+    margin-top: 1em;
+    background: var(--secondary-background-color);
+    color: var(--background-color);
+    border-radius: .5em;;
+ }
