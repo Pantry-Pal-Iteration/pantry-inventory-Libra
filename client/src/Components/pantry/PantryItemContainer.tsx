@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
-import "./pantry.css";
-import PantryItem from "./PantryItem";
+import { useState, useEffect } from 'react'
+import './pantry.css'
+
+import PantryItem from './PantryItem.tsx';
 
 interface PantryItemType {
   _id?: string;
@@ -11,8 +12,6 @@ interface PantryItemType {
   threshold?: number;
   expirationDate?: string;
 }
-
-type FilterType = "all" | "expired" | "expiring-soon" | "fresh";
 
 function getStatus(item: PantryItemType) {
   if (!item.expirationDate) return "no-date";
@@ -37,13 +36,14 @@ function sortByExpiration(a: PantryItemType, b: PantryItemType) {
   return aTime - bTime; // soonest first
 }
 
+
 const PantryItemContainer = () => {
   const [pItems, setPItems] = useState<PantryItemType[]>([]);
-  const [filter, setFilter] = useState<FilterType>("all");
+  const [filter, setFilter] = useState<"all" | "expired" | "expiring-soon" | "fresh">("all");
 
   useEffect(() => {
     async function getPantryItems() {
-      const response = await fetch("http://localhost:3000"); // keeping your existing endpoint :contentReference[oaicite:4]{index=4}
+      const response = await fetch('http://localhost:3000');
       if (!response.ok) {
         const message = `An error occurred: ${response.statusText}`;
         console.error(message);
@@ -52,39 +52,28 @@ const PantryItemContainer = () => {
       const items = await response.json();
       setPItems(items);
     }
-
     getPantryItems();
+    return;
   }, []);
 
-  const displayedItems = pItems
+  console.log(`Items: ${pItems}`);
+
+const displayedItems = pItems
     .filter((item) => (filter === "all" ? true : getStatus(item) === filter))
     .slice()
     .sort(sortByExpiration);
 
   return (
-    <>
-      <div className="pantry-filters">
-        <button className={`filter-button ${filter === "all" ? "active" : ""}`} onClick={() => setFilter("all")}>
-          All
-        </button>
-        <button className={`filter-button ${filter === "expired" ? "active" : ""}`} onClick={() => setFilter("expired")}>
-          Expired
-        </button>
-        <button className={`filter-button ${filter === "expiring-soon" ? "active" : ""}`} onClick={() => setFilter("expiring-soon")}>
-          Expiring Soon
-        </button>
-        <button className={`filter-button ${filter === "fresh" ? "active" : ""}`} onClick={() => setFilter("fresh")}>
-          Fresh
-        </button>
+   <> <div style={{ display: "flex", gap: "8px", justifyContent: "center", marginBottom: "12px" }}>
+        <button className="button" onClick={() => setFilter("all")}>All</button>
+        <button className="button" onClick={() => setFilter("expired")}>Expired</button>
+        <button className="button" onClick={() => setFilter("expiring-soon")}>Expiring Soon</button>
+        <button className="button" onClick={() => setFilter("fresh")}>Fresh</button>
       </div>
 
-      <div className="pantry-container">
-        {displayedItems.map((pItem, idx) => (
-          <PantryItem
-            key={pItem._id ?? `${pItem.name}-${idx}`}
-            pantryItem={pItem}
-            status={getStatus(pItem)}
-          />
+      <div className='pantry-container'>
+        {displayedItems.map((pItem) => (
+          <PantryItem key={pItem._id} pantryItem={pItem} />
         ))}
       </div>
     </>
@@ -92,3 +81,45 @@ const PantryItemContainer = () => {
 };
 
 export default PantryItemContainer;
+
+
+// interface PantryItemType {
+//   _id?: string;
+//   name: string;
+//   category?: string;
+//   quantity: number;
+//   unitType?: string;
+//   threshold?: number;
+//   // expirationDate?: string;
+// }
+
+// const PantryItemContainer = () => {
+//   const [pItems, setPItems] = useState<PantryItemType[]>([]);
+
+//   useEffect(() => {
+//     async function getPantryItems() {
+//       const response = await fetch('http://localhost:3000');
+//       if (!response.ok) {
+//         const message = `An error occurred: ${response.statusText}`;
+//         console.error(message);
+//         return;
+//       }
+//       const items = await response.json();
+//       setPItems(items);
+//     }
+//     getPantryItems();
+//     return;
+//   }, []);
+
+//   console.log(`Items: ${pItems}`);
+
+//   return (
+//     <div className='pantry-container'>
+//       {pItems.map((pItem) => (
+//         <PantryItem key={pItem._id} pantryItem={pItem} />
+//       ))}
+//     </div>
+//   );
+// };
+
+// export default PantryItemContainer;
