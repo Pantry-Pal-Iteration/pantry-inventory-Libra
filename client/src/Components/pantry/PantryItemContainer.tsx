@@ -1,113 +1,94 @@
-// client/src/components/pantry/PantryItemContainer.tsx
-import React from 'react';
-import './pantry.css';
-import PantryItem, { type PantryItemType } from './PantryItem.tsx';
+import { useState, useEffect } from "react";
+import "./pantry.css";
+import PantryItem from "./PantryItem";
 
-type Props = {
-  items: PantryItemType[];
-  loading: boolean;
-  error: string;
-  onUpdate: (name: string) => void;
-  onDelete: (name: string) => void;
-};
+interface PantryItemType {
+  _id?: string;
+  name: string;
+  category?: string;
+  quantity: number;
+  unitType?: string;
+  threshold?: number;
+  expirationDate?: string;
+}
 
-const PantryItemContainer = ({ items, loading, error, onUpdate, onDelete }: Props) => {
-  if (loading) {
-    return (
-      <section className="pantry-container">
-        <div className="pantry-meta">
-          <h2 className="section-title">Your pantry</h2>
-          <p className="section-subtitle">Loading items…</p>
-        </div>
+type FilterType = "all" | "expired" | "expiring-soon" | "fresh";
 
-        <div className="pantry-grid">
-          {Array.from({ length: 6 }).map((_, idx) => (
-            <div key={idx} className="skeleton-card" />
-          ))}
-        </div>
-      </section>
-    );
-  }
+function getStatus(item: PantryItemType) {
+  if (!item.expirationDate) return "no-date";
 
-  if (error) {
-    return (
-      <section className="pantry-container">
-        <div className="pantry-meta">
-          <h2 className="section-title">Your pantry</h2>
-          <p className="error-text">{error}</p>
-        </div>
-      </section>
-    );
-  }
+  const today = new Date();
+  const exp = new Date(item.expirationDate);
+
+  today.setHours(0, 0, 0, 0);
+  exp.setHours(0, 0, 0, 0);
+
+  const diffMs = exp.getTime() - today.getTime();
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) return "expired";
+  if (diffDays <= 3) return "expiring-soon";
+  return "fresh";
+}
+
+function sortByExpiration(a: PantryItemType, b: PantryItemType) {
+  const aTime = a.expirationDate ? new Date(a.expirationDate).getTime() : Infinity;
+  const bTime = b.expirationDate ? new Date(b.expirationDate).getTime() : Infinity;
+  return aTime - bTime; // soonest first
+}
+
+const PantryItemContainer = () => {
+  const [pItems, setPItems] = useState<PantryItemType[]>([]);
+  const [filter, setFilter] = useState<FilterType>("all");
+
+  useEffect(() => {
+    async function getPantryItems() {
+      const response = await fetch("http://localhost:3000"); // keeping your existing endpoint :contentReference[oaicite:4]{index=4}
+      if (!response.ok) {
+        const message = `An error occurred: ${response.statusText}`;
+        console.error(message);
+        return;
+      }
+      const items = await response.json();
+      setPItems(items);
+    }
+
+    getPantryItems();
+  }, []);
+
+  const displayedItems = pItems
+    .filter((item) => (filter === "all" ? true : getStatus(item) === filter))
+    .slice()
+    .sort(sortByExpiration);
 
   return (
-    <section className="pantry-container">
-      <div className="pantry-meta">
-        <h2 className="section-title">Your pantry</h2>
-        <p className="section-subtitle">{items.length} item{items.length === 1 ? '' : 's'}</p>
+    <>
+      <div className="pantry-filters">
+        <button className={`filter-button ${filter === "all" ? "active" : ""}`} onClick={() => setFilter("all")}>
+          All
+        </button>
+        <button className={`filter-button ${filter === "expired" ? "active" : ""}`} onClick={() => setFilter("expired")}>
+          Expired
+        </button>
+        <button className={`filter-button ${filter === "expiring-soon" ? "active" : ""}`} onClick={() => setFilter("expiring-soon")}>
+          Expiring Soon
+        </button>
+        <button className={`filter-button ${filter === "fresh" ? "active" : ""}`} onClick={() => setFilter("fresh")}>
+          Fresh
+        </button>
       </div>
 
-      {items.length === 0 ? (
-        <div className="empty-state">
-          <p className="empty-title">No items yet.</p>
-          <p className="empty-subtitle">Add something above to start tracking your pantry.</p>
-        </div>
-      ) : (
-        <div className="pantry-grid">
-          {items.map((pItem) => (
-            <PantryItem
-              key={pItem._id ?? pItem.name}
-              pantryItem={pItem}
-              onUpdate={onUpdate}
-              onDelete={onDelete}
-            />
-          ))}
-        </div>
-      )}
-    </section>
+      <div className="pantry-container">
+        {displayedItems.map((pItem, idx) => (
+          <PantryItem
+            key={pItem._id ?? `${pItem.name}-${idx}`}
+            pantryItem={pItem}
+            status={getStatus(pItem)}
+          />
+        ))}
+      </div>
+    </>
   );
 };
 
 export default PantryItemContainer;
-
-
-// interface PantryItemType {
-//   _id?: string;
-//   name: string;
-//   category?: string;
-//   quantity: number;
-//   unitType?: string;
-//   threshold?: number;
-//   // expirationDate?: string;
-// }
-
-// const PantryItemContainer = () => {
-//   const [pItems, setPItems] = useState<PantryItemType[]>([]);
-
-//   useEffect(() => {
-//     async function getPantryItems() {
-//       const response = await fetch('http://localhost:3000');
-//       if (!response.ok) {
-//         const message = `An error occurred: ${response.statusText}`;
-//         console.error(message);
-//         return;
-//       }
-//       const items = await response.json();
-//       setPItems(items);
-//     }
-//     getPantryItems();
-//     return;
-//   }, []);
-
-//   console.log(`Items: ${pItems}`);
-
-//   return (
-//     <div className='pantry-container'>
-//       {pItems.map((pItem) => (
-//         <PantryItem key={pItem._id} pantryItem={pItem} />
-//       ))}
-//     </div>
-//   );
-// };
-
-// export default PantryItemContainer;
