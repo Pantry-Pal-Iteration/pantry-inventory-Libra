@@ -33,3 +33,31 @@ gap: 40px;
     color: var(--background-color);
     border-radius: .5em;;
  }
+
+/* Expiration status pill */
+.expiration-status {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* matches: expired */
+.expiration-status.expired {
+  background: #ffdddd;
+  border: 1px solid #ff6b6b;
+}
+
+/* matches: expiring-soon (IMPORTANT: this matches your TS) */
+.expiration-status.expiring-soon {
+  background: #fff3cd;
+  border: 1px solid #f0c36d;
+}
+
+/* matches: fresh */
+.expiration-status.fresh {
+  background: #ddfbe3;
+  border: 1px solid #51cf66;
+}

@@ -40,6 +40,21 @@ function formatExpirationDate(dateString?: string) {
   });
 }
 
+function getExpirationStatus(expirationDate?: string) {
+  if (!expirationDate) return "no-date";
+
+  const today = new Date();
+  const exp = new Date(expirationDate);
+
+  const diffInMs = exp.getTime() - today.getTime();
+  const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+
+  if (diffInDays < 0) return "expired";
+  if (diffInDays <= 3) return "expiring-soon";
+  return "fresh";
+}
+
+
 const PantryItem = ({ pantryItem }: PantryItemProps) => {
   // deconstruct pantryItem
   const { 
@@ -53,7 +68,6 @@ const PantryItem = ({ pantryItem }: PantryItemProps) => {
     // buttonDisabled = false (es logica de React, no datos)
   } = pantryItem;
 
-    
     // const handleClick = () => {
     //   if (onButtonClick) {
     //     onButtonClick();
@@ -63,6 +77,10 @@ const PantryItem = ({ pantryItem }: PantryItemProps) => {
     const handleClick = (action: "update" | "delete") => {
   console.log(`${action} clicked for:`, name);
 };
+const expirationStatus = getExpirationStatus(expirationDate);
+// console.log("expirationDate:", expirationDate, "status:", expirationStatus);
+
+
   return (
     <>
       <article className='pantry-card'>
@@ -77,6 +95,15 @@ const PantryItem = ({ pantryItem }: PantryItemProps) => {
             <li className='expirationDate'>
             Expiration date: { formatExpirationDate(expirationDate) }
             </li> )}
+            {expirationStatus !== "no-date" && (
+              <li
+            className={`expiration-status ${expirationStatus}`}
+            >
+                {expirationStatus === "expired" && "Expired"}
+                {expirationStatus === "expiring-soon" && "Expiring Soon"}
+                {expirationStatus === "fresh" && "Fresh"}
+                </li>
+              )}
           </ul>
           <div className="button-container">
            <button
