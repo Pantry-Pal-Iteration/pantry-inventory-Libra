@@ -112,7 +112,7 @@ const pantryController = {
 
 
   //delete: path 
-  async deletePantryItemById(
+  async deletePantryItemByID(
     req: Request,
     res: Response,
     next: NextFunction
@@ -120,10 +120,14 @@ const pantryController = {
     try {
       const id = req.params.id;
 
-      const deletedPantryItem = await PantryItem.findByIdAndDelete(id);
+      console.log(id)
+
+     // const deletedPantryItem = await PantryItem.findOneAndDelete({name: name});
+
+     const deletedPantryItem = await PantryItem.findByIdAndDelete(id)
 
       if (!deletedPantryItem) {
-        res.status(404).json({ message: `Pantry item with id ${id} not found.` });
+        res.status(404).json({ message: `Pantry item with the id ${id} not found.` });
         return;
       }
 

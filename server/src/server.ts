@@ -59,7 +59,7 @@ pantryRouter.get(
 
 //updating pantry items
 pantryRouter.patch(
-  '/id/:id',
+  '/:id',
   pantryController.updatePantryItemById,
   (req: Request, res: Response) => {
     return res.status(200).json(res.locals.updatedPantryItem);
@@ -69,7 +69,7 @@ pantryRouter.patch(
 //update expiry data
 pantryRouter.patch(
   '/expiry/:name',
-  pantryController.updateExpiryItem,
+  //pantryController.updateExpiryItem,
   (req: Request, res: Response) => {
     res.status(201).json(res.locals.updatedExpiryItem)
   }
@@ -77,8 +77,8 @@ pantryRouter.patch(
 
 //delete pantry item
 pantryRouter.delete(
-  '/id/:id',
-  pantryController.deletePantryItemById,
+  '/:id',
+  pantryController.deletePantryItemByID,
   (req: Request, res: Response) => {
     return res.status(200).json(res.locals.deletedPantryItem);
   }
