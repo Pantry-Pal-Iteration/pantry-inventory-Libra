@@ -1,4 +1,4 @@
-/* client/src/components/pantry/pantry.css */
+
 
 .pantry-container {
   width: 100%;
@@ -213,7 +213,7 @@
   border: 1px solid #ff6b6b;
 }
 
-/* matches: expiring-soon (IMPORTANT: this matches your TS) */
+/* matches: expiring-soon */
 .expiration-status.expiring-soon {
   background: #fff3cd;
   border: 1px solid #f0c36d;
@@ -226,7 +226,7 @@
 }
 
 
-/* ===== Pantry grid modernization (ADD AT BOTTOM) ===== */
+/* === Pantry grid === */
 
 .pantry-filters{
   display: flex;
@@ -270,9 +270,9 @@
 }
 
 
-/* ===== UX FIXES (ADD AT BOTTOM) ===== */
+/* ===== UX FIXES ===== */
 
-/* 1) Make all buttons uniform */
+/* Make all buttons uniform */
 .button {
   min-height: 42px;
   display: flex;
@@ -283,30 +283,27 @@
   white-space: nowrap;
 }
 
-/* If button text still feels "off", normalize font-size */
+
 .button {
   font-size: 13px;
 }
 
-/* 2) Expiration pill: force readable text on light backgrounds (dark mode fix) */
+/* Expiration pill: force readable text on light backgrounds */
 .expiration-status {
-  color: #141414;         /* <-- fixes white-on-yellow issue */
+  color: #141414;      
 }
 
-/* optional: slightly stronger contrast */
 .expiration-status.expiring-soon {
   background: #ffe9a6;
   border-color: #e7b84f;
 }
 
-/* 3) Put Clear Expired in its own row INSIDE expired tab */
 .expired-actions {
   display: flex;
   justify-content: center;
   margin: 10px 0 16px;
 }
 
-/* 4) Keep grid centered and not full-width (you already like this) */
 .pantry-grid {
   max-width: 1100px;
   margin: 0 auto;

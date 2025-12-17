@@ -12,7 +12,7 @@ interface PantryItemType {
 
 interface PantryItemProps {
   pantryItem: PantryItemType;
-  onMarkExpired?: (itemName: string) => void; // ✅ new
+  onMarkExpired?: (itemName: string) => void; // 
 }
 
 function formatExpirationDate(dateString?: string) {
@@ -50,7 +50,7 @@ const PantryItem = ({ pantryItem, onMarkExpired }: PantryItemProps) => {
     expirationDate,
   } = pantryItem;
 
-  // leaving these as-is (teammate owns update/delete)
+
   const handleClick = (action: "update" | "delete") => {
     console.log(`${action} clicked for:`, name);
   };

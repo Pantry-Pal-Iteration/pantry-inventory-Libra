@@ -1,6 +1,4 @@
-/* client/src/App.css */
 
-/* ✅ stop accidental horizontal scroll */
 html, body, #root {
   height: 100%;
   width: 100%;
@@ -10,9 +8,7 @@ html, body, #root {
 * { box-sizing: border-box; }
 img { max-width: 100%; display: block; }
 
-/* ---------------------------
-   Theme tokens (Light + Dark)
----------------------------- */
+/* Theme tokens (Light + Dark) */
 
 :root {
   --radius: 18px;
@@ -24,7 +20,7 @@ img { max-width: 100%; display: block; }
   --danger: #ff4d6d;
 }
 
-/* Light = warm + clean */
+/* Light */
 :root[data-theme="light"] {
   --bg: #f7f4ea;
   --bg2: #f1ecdd;
@@ -44,7 +40,7 @@ img { max-width: 100%; display: block; }
   --pillBorder: rgba(124, 92, 255, 0.18);
 }
 
-/* Dark = calm + premium */
+/* Dark */
 :root[data-theme="dark"] {
   --bg: #0b1020;
   --bg2: #0f1730;
@@ -69,7 +65,7 @@ body {
   color: var(--text);
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 
-  /* ✅ calm gradient background for both themes */
+  
   background:
     radial-gradient(900px 500px at 10% -10%, rgba(124, 92, 255, 0.22), transparent 60%),
     radial-gradient(900px 500px at 90% 10%, rgba(41, 214, 200, 0.18), transparent 55%),
