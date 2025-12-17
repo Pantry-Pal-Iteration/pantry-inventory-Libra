@@ -55,21 +55,19 @@ pantryRouter.get(
 
 //updating pantry items
 pantryRouter.patch(
-  '/:name',
-  pantryController.updatePantryItem,
+  '/id/:id',
+  pantryController.updatePantryItemById,
   (req: Request, res: Response) => {
-    res.status(201).json(res.locals.updatedPantryItem);
+    return res.status(200).json(res.locals.updatedPantryItem);
   }
 );
 
 //delete pantry item
 pantryRouter.delete(
-  '/:name',
-  pantryController.deletePantryItem,
-  (req, res, next) => {
-    res
-      .status(200)
-      .send(`${res.locals.deletedPantryItem} deleted successfully`);
+  '/id/:id',
+  pantryController.deletePantryItemById,
+  (req: Request, res: Response) => {
+    return res.status(200).json(res.locals.deletedPantryItem);
   }
 );
 

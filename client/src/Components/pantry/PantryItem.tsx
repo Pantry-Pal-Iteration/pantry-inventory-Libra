@@ -1,14 +1,18 @@
 import './pantry.css';
+import { useState } from "react";
+
 
 interface PantryItemType {
-  _id?: string;
+  _id: string;
   name: string;
   category?: string;
   quantity: number;
   unitType?: string;
   threshold?: number;
   expirationDate?: string;
-  onButtonClick?: () => void;
+ onDelete?: (id: string) => void;
+ onUpdate?: (id: string, updates: Partial<PantryItemType>) => void;
+ onButtonClick?: () => void;
   // buttonText?: string;
   buttonDisabled?: boolean;
   }
@@ -58,12 +62,15 @@ function getExpirationStatus(expirationDate?: string) {
 const PantryItem = ({ pantryItem }: PantryItemProps) => {
   // deconstruct pantryItem
   const { 
+    _id,
     name, 
     category, 
     quantity, 
     unitType, 
     threshold, 
     expirationDate,
+    onDelete,
+    onUpdate
     // onButtonClick, (lo quite porque pantryItem vine de mongoDB y este no guarda functions) 
     // buttonDisabled = false (es logica de React, no datos)
   } = pantryItem;
@@ -74,11 +81,14 @@ const PantryItem = ({ pantryItem }: PantryItemProps) => {
     //   }
     //  console.log("button works"); 
     // }
-    const handleClick = (action: "update" | "delete") => {
-  console.log(`${action} clicked for:`, name);
-};
+//     const handleClick = (action: "update" | "delete") => {
+//   console.log(`${action} clicked for:`, name);
+// };
 const expirationStatus = getExpirationStatus(expirationDate);
 // console.log("expirationDate:", expirationDate, "status:", expirationStatus);
+
+const [isEditing, setIsEditing] = useState(false);
+const [newQty, setNewQty] = useState(quantity);
 
 
   return (
@@ -105,16 +115,44 @@ const expirationStatus = getExpirationStatus(expirationDate);
                 </li>
               )}
           </ul>
+          {isEditing && (
+            <div style={{ display: "flex", gap: "8px", marginTop: "10px" }}>
+              <input
+              type="number"
+              value={newQty}
+              onChange={(e) => setNewQty(Number(e.target.value))}
+              style={{
+                width: "90px",
+                padding: "6px",
+                border: "1px solid white",
+                background: "white",
+                color: "black",
+                }}
+                />
+              
+              <button
+              className="button"
+              onClick={() => {
+                onUpdate && onUpdate(_id, { quantity: newQty });
+                setIsEditing(false);
+              }}
+              >
+                Save
+                </button>
+                </div>
+              )}
+
           <div className="button-container">
            <button
-           onClick={() => handleClick("update")}
            className="button"
+           onClick={() => setIsEditing((prev) => !prev)}
            >
-            Update Item
+            {isEditing ? "Cancel" : "Update Item"}
             </button>
+
             <button
-            onClick={() => handleClick("delete")}
             className="button"
+            onClick={() => onDelete && onDelete(_id)}
             >
               Delete Item
               </button>
