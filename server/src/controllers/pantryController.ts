@@ -83,27 +83,26 @@ const pantryController = {
   },
 
   //update: Patch(stretch)
-  async updatePantryItem(
+  async updatePantryItemById(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const currentItem = req.params.name;
+      const id = req.params.id;
       const updates = req.body;
 
-      const updatedPantryItem = await PantryItem.findOneAndUpdate(
-        { name: currentItem },
+      const updatedPantryItem = await PantryItem.findByIdAndUpdate(
+        id,
         { $set: updates },
         { new: true }
       );
 
       if (!updatedPantryItem) {
-        res
-          .status(404)
-          .json({ message: `Pantry item ${currentItem} not found.` });
+        res.status(404).json({ message: `Pantry item with id ${id} not found.` });
         return;
       }
+
       res.locals.updatedPantryItem = updatedPantryItem;
       return next();
     } catch (err) {
@@ -111,22 +110,23 @@ const pantryController = {
     }
   },
 
-  async deletePantryItem(
+
+  //delete: path 
+  async deletePantryItemById(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const name = req.params.name;
-      const deletedPantryItem = await PantryItem.findOneAndDelete({
-        name: name,
-      });
-      console.log(deletedPantryItem);
+      const id = req.params.id;
+
+      const deletedPantryItem = await PantryItem.findByIdAndDelete(id);
+
       if (!deletedPantryItem) {
-        res.status(404).json({ message: `Pantry item ${name} not found.` });
+        res.status(404).json({ message: `Pantry item with id ${id} not found.` });
         return;
       }
-      console.log(`Deleted: ${deletedPantryItem}`);
+
       res.locals.deletedPantryItem = deletedPantryItem;
       return next();
     } catch (err) {
@@ -134,5 +134,6 @@ const pantryController = {
     }
   },
 };
+
 
 export default pantryController;

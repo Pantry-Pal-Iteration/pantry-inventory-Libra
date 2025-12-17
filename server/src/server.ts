@@ -3,6 +3,7 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import pantryController from './controllers/pantryController';
+
 dotenv.config();
 
 const app: Express = express();
@@ -11,13 +12,16 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const PORT: string | number = process.env.PORT || 3000;
+//const PORT: string | number = process.env.PORT || 3000;
 
-const uri: string | any = process.env.MONGODB_URI;
+const PORT = process.env.PORT || '3000';
+
+//const uri: string | any = process.env.MONGODB_URI;
 
 (async () => {
   try {
-    await mongoose.connect(uri);
+    //Type error when I remove this OR Statement for some reason -- server crashes
+    await mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://virtualdb:Mainconnect12345@cluster0.2s4xmsi.mongodb.net/?appName=Cluster0");
     console.log('Connected to the database');
   } catch (error) {
     console.error(error);
@@ -55,21 +59,28 @@ pantryRouter.get(
 
 //updating pantry items
 pantryRouter.patch(
-  '/:name',
-  pantryController.updatePantryItem,
+  '/id/:id',
+  pantryController.updatePantryItemById,
   (req: Request, res: Response) => {
-    res.status(201).json(res.locals.updatedPantryItem);
+    return res.status(200).json(res.locals.updatedPantryItem);
   }
 );
 
+//update expiry data
+pantryRouter.patch(
+  '/expiry/:name',
+  pantryController.updateExpiryItem,
+  (req: Request, res: Response) => {
+    res.status(201).json(res.locals.updatedExpiryItem)
+  }
+)
+
 //delete pantry item
 pantryRouter.delete(
-  '/:name',
-  pantryController.deletePantryItem,
-  (req, res, next) => {
-    res
-      .status(200)
-      .send(`${res.locals.deletedPantryItem} deleted successfully`);
+  '/id/:id',
+  pantryController.deletePantryItemById,
+  (req: Request, res: Response) => {
+    return res.status(200).json(res.locals.deletedPantryItem);
   }
 );
 

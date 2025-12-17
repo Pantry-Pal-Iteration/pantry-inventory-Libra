@@ -1,18 +1,12 @@
-import './pantry.css';
-
-interface PantryItemType {
-  _id?: string;
-  name: string;
-  category?: string;
-  quantity: number;
-  unitType?: string;
-  threshold?: number;
-  expirationDate?: string;
-}
+import "./pantry.css";
+import { useState } from "react";
+import type { PantryItemType } from "./PantryItemContainer";
 
 interface PantryItemProps {
   pantryItem: PantryItemType;
-  onMarkExpired?: (itemName: string) => void; // 
+  onDelete: (id: string) => Promise<void>;
+  onUpdate: (id: string, updates: Partial<PantryItemType>) => Promise<void>;
+  onMarkExpired: (id: string) => Promise<void> | void;
 }
 
 function formatExpirationDate(dateString?: string) {
@@ -40,35 +34,26 @@ function getExpirationStatus(expirationDate?: string) {
   return "fresh";
 }
 
-const PantryItem = ({ pantryItem, onMarkExpired }: PantryItemProps) => {
-  const {
-    name,
-    category,
-    quantity,
-    unitType,
-    threshold,
-    expirationDate,
-  } = pantryItem;
-
-
-  const handleClick = (action: "update" | "delete") => {
-    console.log(`${action} clicked for:`, name);
-  };
+export default function PantryItem({ pantryItem, onDelete, onUpdate, onMarkExpired }: PantryItemProps) {
+  const { _id, name, category, quantity, unitType, threshold, expirationDate } = pantryItem;
 
   const expirationStatus = getExpirationStatus(expirationDate);
 
-  return (
-    <article className='pantry-card'>
-      <h3 className='name'>{name.toUpperCase()}</h3>
+  const [isEditing, setIsEditing] = useState(false);
+  const [newQty, setNewQty] = useState<number>(quantity);
 
-      <ul className='listItems'>
-        {category && <li className='category'>Category: {category.toLowerCase()}</li>}
-        <li className='quantity'>Quantity: {quantity}</li>
-        {unitType && <li className='unitType'>Unit: {unitType.toLowerCase()}</li>}
-        {threshold && <li className='threshold'>Buy more if you have less than {threshold}</li>}
+  return (
+    <article className="pantry-card">
+      <h3 className="name">{name.toUpperCase()}</h3>
+
+      <ul className="listItems">
+        {category && <li className="category">Category: {category.toLowerCase()}</li>}
+        <li className="quantity">Quantity: {quantity}</li>
+        {unitType && <li className="unitType">Unit: {unitType.toLowerCase()}</li>}
+        {threshold && <li className="threshold">Buy more if you have less than {threshold}</li>}
 
         {expirationDate && (
-          <li className='expirationDate'>
+          <li className="expirationDate">
             Expiration date: {formatExpirationDate(expirationDate)}
           </li>
         )}
@@ -82,19 +67,46 @@ const PantryItem = ({ pantryItem, onMarkExpired }: PantryItemProps) => {
         )}
       </ul>
 
+      {isEditing && (
+        <div className="edit-row">
+          <input
+            type="number"
+            value={newQty}
+            onChange={(e) => setNewQty(Number(e.target.value))}
+          />
+          <button
+            className="button"
+            onClick={() => {
+              onUpdate(_id, { quantity: newQty });
+              setIsEditing(false);
+            }}
+            type="button"
+          >
+            Save
+          </button>
+        </div>
+      )}
+
       <div className="button-container">
-        <button onClick={() => handleClick("update")} className="button">
-          Update Item
+        <button
+          className="button"
+          onClick={() => setIsEditing((prev) => !prev)}
+          type="button"
+        >
+          {isEditing ? "Cancel" : "Update Item"}
         </button>
 
-        <button onClick={() => handleClick("delete")} className="button">
+        <button
+          className="button button--danger"
+          onClick={() => onDelete(_id)}
+          type="button"
+        >
           Delete Item
         </button>
 
-        
         <button
-          onClick={() => onMarkExpired?.(name)}
           className="button button-expire"
+          onClick={() => onMarkExpired(_id)}
           type="button"
         >
           Mark Expired
@@ -102,6 +114,4 @@ const PantryItem = ({ pantryItem, onMarkExpired }: PantryItemProps) => {
       </div>
     </article>
   );
-};
-
-export default PantryItem;
+}
