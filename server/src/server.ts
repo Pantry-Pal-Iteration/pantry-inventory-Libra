@@ -69,7 +69,7 @@ pantryRouter.patch(
 //update expiry data
 pantryRouter.patch(
   '/expiry/:name',
-  //pantryController.updateExpiryItem,
+ // pantryController.updateExpiryItem,
   (req: Request, res: Response) => {
     res.status(201).json(res.locals.updatedExpiryItem)
   }
