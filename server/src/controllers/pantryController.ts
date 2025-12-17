@@ -111,6 +111,40 @@ const pantryController = {
     }
   },
 
+
+    //update: Patch(stretch)
+  async updateExpiryItem(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const currentItem = req.params.name;
+      //const updates = req.body;
+
+      const hardcodedUpdates = {
+        expirationDate: "1800-12-02T00:00:00.000Z", // Hardcoded expiry
+      };
+
+      const updatedExpiryItem = await PantryItem.findOneAndUpdate(
+        { name: currentItem },
+        { $set: hardcodedUpdates },
+        { new: true }
+      );
+
+      if (!updatedExpiryItem) {
+        res
+          .status(404)
+          .json({ message: `Pantry item ${currentItem} not found.` });
+        return;
+      }
+      res.locals.updatedExpiryItem = updatedExpiryItem;
+      return next();
+    } catch (err) {
+      return next(err);
+    }
+  },
+
   async deletePantryItem(
     req: Request,
     res: Response,
