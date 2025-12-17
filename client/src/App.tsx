@@ -1,119 +1,107 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import './App.css';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import "./App.css";
 
-import Header from './components/header/Header';
-import Footer from './components/footer/Footer';
+import Header from "./Components/header/Header";
+import Footer from "./Components/footer/Footer"
+import CreatePantryItemContainer from "./Components/create-container/CreatePantryItemContainer";
+import PantryItemContainer, { type PantryItemType } from "./Components/pantry/PantryItemContainer";
 
-import PantryItemContainer from './components/pantry/PantryItemContainer';
-import type { PantryItemType } from './components/pantry/PantryItem';
-import CreatePantryItemContainer from './components/create-container/CreatePantryItemContainer';
-import type { FormFields } from './components/create-container/CreatePantryItemForm';
+const API_BASE = "http://localhost:3000";
 
-
-const API_BASE = 'http://localhost:3000'
-
-const App = () => {
+export default function App() {
   const [items, setItems] = useState<PantryItemType[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>('');
-  const [busyName, setBusyName] = useState<string>(''); // disables update/delete per-card
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [busyId, setBusyId] = useState("");
 
-  const fetchItems = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const res = await fetch(API_BASE);
-      if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
-      const data = await res.json();
-      if (!Array.isArray(data)) throw new Error('Unexpected inventory response format');
-      setItems(data);
-    } catch (e) {
-      console.error(e);
-      setError('Could not load pantry items. Make sure the backend is running.');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
+  // initial load
   useEffect(() => {
-    void fetchItems();
-  }, [fetchItems]);
+    let ignore = false;
 
-  const onCreated = useCallback((newItem: FormFields) => {
-    // put newest on top
-    setItems((prev) => [newItem as PantryItemType, ...prev]);
+    (async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const res = await fetch(`${API_BASE}/`);
+        if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+        const data = await res.json();
+
+        if (!ignore) setItems(Array.isArray(data) ? data : []);
+      } catch (e) {
+        console.error(e);
+        if (!ignore) setError("Failed to load pantry items.");
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    })();
+
+    return () => {
+      ignore = true;
+    };
   }, []);
 
-  const onDelete = useCallback(async (name: string) => {
-    const ok = window.confirm(`Delete "${name}" from your pantry?`);
-    if (!ok) return;
+  // this show immediately + put first
+  const onCreated = useCallback((created: PantryItemType) => {
+    setItems((prev) => [created, ...prev.filter((x) => x._id !== created._id)]);
+  }, []);
 
-    setBusyName(name);
-    setError('');
+  // delete by id
+  const onDelete = useCallback(async (id: string) => {
+    setBusyId(id);
+    setError("");
     try {
-      const res = await fetch(`${API_BASE}/${encodeURIComponent(name)}`, { method: 'DELETE' });
+      const res = await fetch(`${API_BASE}/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
       if (!res.ok) throw new Error(`Delete failed: ${res.status}`);
 
-      setItems((prev) => prev.filter((x) => x.name !== name));
+      setItems((prev) => prev.filter((x) => x._id !== id));
     } catch (e) {
       console.error(e);
-      setError('Delete failed. Check server route + item name.');
+      setError("Delete failed. Check your server route.");
     } finally {
-      setBusyName('');
+      setBusyId("");
     }
   }, []);
 
+  // update by id 
   const onUpdate = useCallback(
-  async (name: string, updates?: Partial<PantryItemType>) => {
-    // If no updates were provided, fall back to the existing "update quantity" 
-    let payload: Partial<PantryItemType> | null = updates ?? null;
+    async (id: string, updates: Partial<PantryItemType>) => {
+      if (!updates || Object.keys(updates).length === 0) return;
 
-    if (!payload || Object.keys(payload).length === 0) {
-      const raw = window.prompt(`New quantity for "${name}"?`);
-      if (raw === null) return;
+      setBusyId(id);
+      setError("");
+      try {
+        const res = await fetch(`${API_BASE}/${encodeURIComponent(id)}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updates),
+        });
 
-      const nextQty = Number(raw);
-      if (!Number.isFinite(nextQty) || nextQty < 1) {
-        window.alert("Quantity must be a number >= 1");
-        return;
+        if (!res.ok) throw new Error(`Update failed: ${res.status}`);
+
+        const updated = await res.json();
+        setItems((prev) => prev.map((x) => (x._id === id ? updated : x)));
+      } catch (e) {
+        console.error(e);
+        setError("Update failed. Check your server route + request body.");
+      } finally {
+        setBusyId("");
       }
-
-      payload = { quantity: nextQty };
-    }
-
-    setBusyName(name);
-    setError("");
-
-    try {
-      const res = await fetch(`${API_BASE}/${encodeURIComponent(name)}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) throw new Error(`Update failed: ${res.status}`);
-
-      const updated = await res.json();
-      setItems((prev) => prev.map((x) => (x.name === name ? updated : x)));
-    } catch (e) {
-      console.error(e);
-      setError("Update failed. Check server route + request body.");
-    } finally {
-      setBusyName("");
-    }
-  }, []
+    },
+    []
   );
-
 
   const containerProps = useMemo(
     () => ({
       items,
       loading,
       error,
-      onUpdate: (name: string, updates: Partial<PantryItemType>) => onUpdate(name, updates),
-      onDelete: (name: string) => onDelete(name),
+      onUpdate: (id: string, updates: Partial<PantryItemType>) => onUpdate(id, updates),
+      onDelete: (id: string) => onDelete(id),
+      busyId,
     }),
-    [items, loading, error, onUpdate, onDelete]
+    [items, loading, error, onUpdate, onDelete, busyId]
   );
 
   return (
@@ -123,16 +111,11 @@ const App = () => {
       <main className="app-main">
         <div className="app-inner">
           <CreatePantryItemContainer onCreated={onCreated} />
-
-          <PantryItemContainer
-            {...containerProps}
-          />
+          <PantryItemContainer {...containerProps} />
         </div>
       </main>
 
       <Footer />
     </div>
   );
-};
-
-export default App;
+}
