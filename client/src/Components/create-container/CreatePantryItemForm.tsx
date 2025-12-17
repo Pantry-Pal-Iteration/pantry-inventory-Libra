@@ -1,13 +1,6 @@
 import React from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
-// import { z } from 'zod';
 import './createContainer.css';
-
-//I'll go down a rabbit hole if I keep looking at data validation.
-// const schema = z.object({
-//   name: z.string().required("Item is required");
-
-// });
 
 export type FormFields = {
   _id?: string;
@@ -16,7 +9,7 @@ export type FormFields = {
   quantity: number;
   unitType?: string;
   threshold?: number;
-  // expirationDate?: Date;
+  expirationDate?: string; 
 };
 
 type Props = {
@@ -65,7 +58,9 @@ const CreatePantryItemForm = ({ onCreated }: Props) => {
           type="text"
           placeholder="e.g., Rice"
         />
-        {errors.name?.message ? <p className="field-error">{errors.name.message}</p> : null}
+        {errors.name?.message ? (
+          <p className="field-error">{errors.name.message}</p>
+         ) : null}
       </div>
 
       <div className="field-row">
@@ -76,7 +71,7 @@ const CreatePantryItemForm = ({ onCreated }: Props) => {
 
         <div className="field">
           <label>Unit</label>
-          <input {...register('unitType')} type="text" placeholder="e.g., bags" />
+          <input {...register('unitType')} type="text" placeholder="e.g., Ibs, bags" />
         </div>
       </div>
 
@@ -90,7 +85,7 @@ const CreatePantryItemForm = ({ onCreated }: Props) => {
               min: { value: 1, message: 'Quantity must be at least 1' },
             })}
             type="number"
-            placeholder="1"
+            placeholder="e.g., 2"
           />
           {errors.quantity?.message ? <p className="field-error">{errors.quantity.message}</p> : null}
         </div>
@@ -105,7 +100,12 @@ const CreatePantryItemForm = ({ onCreated }: Props) => {
         </div>
       </div>
 
-      <button className="primary-btn" disabled={isSubmitting} type="submit">
+      <div className="field">
+        <label>Expiration date</label>
+        <input {...register('expirationDate')} type="date" />
+      </div>
+
+      <button className="primary-btn create-submit" disabled={isSubmitting} type="submit">
         {isSubmitting ? 'Adding…' : 'Add to pantry'}
       </button>
     </form>
@@ -114,38 +114,4 @@ const CreatePantryItemForm = ({ onCreated }: Props) => {
 
 export default CreatePantryItemForm;
 
-//   return (
-//     <>
-//       <form className='create-form' onSubmit={handleSubmit(onSubmit)}>
-//         <input
-//           {...register('name', {
-//             required: true,
-//           })}
-//           type='text'
-//           placeholder='Item Name'
-//         />
-//         <input {...register('category')} type='text' placeholder='Category' />
-//         <input
-//           {...register('quantity', {
-//             required: true,
-//           })}
-//           type='number'
-//           placeholder='Quantity'
-//         />
-//         <input {...register('unitType')} type='text' placeholder='Unit Type' />
-//         <input {...register('threshold')} type='text' placeholder='Threshold' />
-//         {/* <input
-//           {...register('expirationDate')}
-//           type='date'
-//           placeholder='Expiration Date'
-//         /> */}
-//         <button disabled={isSubmitting} type='submit'>
-//           {isSubmitting ? 'Filling your pantry!' : 'Submit'}
-//         </button>
-//       </form>
-//     </>
-//   );
-// };
-
-// export default CreatePantryItemForm;
 

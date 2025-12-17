@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react'
-import './pantry.css'
+import { useMemo, useState } from "react";
+import "./pantry.css";
+import PantryItem from "./PantryItem";
 
-import PantryItem from './PantryItem.tsx';
-
-interface PantryItemType {
+export interface PantryItemType {
   _id: string;
   name: string;
   category?: string;
@@ -12,6 +11,14 @@ interface PantryItemType {
   threshold?: number;
   expirationDate?: string;
 }
+
+type Props = {
+  items: PantryItemType[];
+  loading: boolean;
+  error: string;
+  onUpdate: (id: string, updates: Partial<PantryItemType>) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
+};
 
 function getStatus(item: PantryItemType) {
   if (!item.expirationDate) return "no-date";
@@ -30,109 +37,79 @@ function getStatus(item: PantryItemType) {
   return "fresh";
 }
 
-function sortByExpiration(a: PantryItemType, b: PantryItemType) {
-  const aTime = a.expirationDate ? new Date(a.expirationDate).getTime() : Infinity;
-  const bTime = b.expirationDate ? new Date(b.expirationDate).getTime() : Infinity;
-  return aTime - bTime; // soonest first
-}
-
-
-const PantryItemContainer = () => {
-  const [pItems, setPItems] = useState<PantryItemType[]>([]);
+export default function PantryItemContainer({
+  items,
+  loading,
+  error,
+  onUpdate,
+  onDelete,
+}: Props) {
   const [filter, setFilter] = useState<"all" | "expired" | "expiring-soon" | "fresh">("all");
-const handleDelete = async (id: string) => {
-  try {
-    const response = await fetch(`http://localhost:3000/id/${id}`, {
-      method: "DELETE",
+
+  const displayedItems = useMemo(() => {
+    return items.filter((item) => {
+      const status = getStatus(item);
+
+      // All = everything NOT expired
+      if (filter === "all") return status !== "expired";
+
+      return status === filter;
     });
+  }, [items, filter]);
 
-    if (!response.ok) {
-      throw new Error("Failed to delete item");
-    }
+  const handleMarkExpired = async (id: string) => {
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    await onUpdate(id, { expirationDate: yesterday });
+    setFilter("expired");
+  };
 
-    // remove item from state (UI update)
-    setPItems((prevItems) =>
-      prevItems.filter((item) => item._id !== id)
+  const handleClearExpired = async () => {
+    const expiredItems = items.filter((it) => getStatus(it) === "expired");
+    if (expiredItems.length === 0) return;
+
+    const ok = window.confirm(
+      `Clear ALL expired items (${expiredItems.length})? This can’t be undone.`
     );
-  } catch (error) {
-    console.error("Error deleting item:", error);
-  }
-};
+    if (!ok) return;
 
-const handleUpdate = async (
-  id: string,
-  updates: Partial<PantryItemType>
-) => {
-  try {
-    const response = await fetch(`http://localhost:3000/id/${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updates),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to update item");
+    for (const it of expiredItems) {
+      await onDelete(it._id);
     }
-
-    const updatedItem = await response.json();
-
-    // update UI state
-    setPItems((prevItems) =>
-      prevItems.map((item) =>
-        item._id === id ? updatedItem : item
-      )
-    );
-  } catch (error) {
-    console.error("Error updating item:", error);
-  }
-};
-
-  useEffect(() => {
-    async function getPantryItems() {
-      const response = await fetch('http://localhost:3000');
-      if (!response.ok) {
-        const message = `An error occurred: ${response.statusText}`;
-        console.error(message);
-        return;
-      }
-      const items = await response.json();
-      setPItems(items);
-    }
-    getPantryItems();
-    return;
-  }, []);
-
-  console.log(`Items: ${pItems}`);
-
-const displayedItems = pItems
-    .filter((item) => (filter === "all" ? true : getStatus(item) === filter))
-    .slice()
-    .sort(sortByExpiration);
+  };
 
   return (
-   <> <div style={{ display: "flex", gap: "8px", justifyContent: "center", marginBottom: "12px" }}>
+    <div className="pantry-container">
+      <div className="pantry-filters">
         <button className="button" onClick={() => setFilter("all")}>All</button>
         <button className="button" onClick={() => setFilter("expired")}>Expired</button>
         <button className="button" onClick={() => setFilter("expiring-soon")}>Expiring Soon</button>
         <button className="button" onClick={() => setFilter("fresh")}>Fresh</button>
       </div>
 
-      <div className='pantry-container'>
-        {displayedItems.map((pItem) => (
-          <PantryItem
-          key={pItem._id}
-          pantryItem={{
-            ...pItem,
-      onDelete: handleDelete,
-      onUpdate: handleUpdate,
-    }}
-  />
-))}
-      </div>
-    </>
-  );
-};
+      {filter === "expired" && !loading && !error && (
+        <div className="expired-actions">
+          <button className="button button--danger" onClick={handleClearExpired}>
+            Clear Expired
+          </button>
+        </div>
+      )}
 
-export default PantryItemContainer;
+      {loading && <p className="status">Loading…</p>}
+      {!loading && error && <p className="status error">{error}</p>}
+
+      {!loading && !error && (
+        <div className="pantry-grid">
+          {displayedItems.map((pItem) => (
+            <PantryItem
+              key={pItem._id}
+              pantryItem={pItem}
+              onUpdate={onUpdate}
+              onDelete={onDelete}
+              onMarkExpired={handleMarkExpired}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

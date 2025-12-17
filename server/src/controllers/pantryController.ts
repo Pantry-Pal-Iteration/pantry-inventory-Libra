@@ -43,7 +43,7 @@ const pantryController = {
         quantity: data.quantity,
         unitType: data.unitType,
         threshold: data.threshold,
-        // expirationDate: data.expirationDate,
+        expirationDate: data.expirationDate ? new Date(data.expirationDate) : undefined,
       });
       res.locals.newPantryItem = newPantryItem;
       return next();

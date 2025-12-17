@@ -1,4 +1,4 @@
-/* client/src/components/pantry/pantry.css */
+
 
 .pantry-container {
   width: 100%;
@@ -197,42 +197,6 @@
 
 
 
-/* .pantry-container {
-background-color: var(--primary-action-color);
-display: flex;
-flex-wrap: wrap;
-justify-content: center;
-gap: 40px;
-}
-
-.pantry-card {
- padding: 2em;
- background: var(--background-color);
- border-radius: 8px;
- box-shadow: 0 2px 8px rgba(0, 0,0,0.1);
- color: var(--text-icons-color);
- width: 70%;
- max-width: 400px;
- margin: 20px;
-}
- ul {
-    list-style-type: none;
- }
-
- .button-container {
-    display: flex;
-    justify-content: space-between;
- }
- .button {
-    padding: .35em;
-    margin-right: 2em;
-    margin-left: 2em;
-    margin-top: 1em;
-    background: var(--secondary-background-color);
-    color: var(--background-color);
-    border-radius: .5em;;
- }
-
 /* Expiration status pill */
 .expiration-status {
   display: inline-block;
@@ -249,7 +213,7 @@ gap: 40px;
   border: 1px solid #ff6b6b;
 }
 
-/* matches: expiring-soon (IMPORTANT: this matches your TS) */
+/* matches: expiring-soon */
 .expiration-status.expiring-soon {
   background: #fff3cd;
   border: 1px solid #f0c36d;
@@ -260,3 +224,89 @@ gap: 40px;
   background: #ddfbe3;
   border: 1px solid #51cf66;
 }
+
+
+/* === Pantry grid === */
+
+.pantry-filters{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.pantry-grid{
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 10px 16px 40px;
+
+  display: grid;
+  grid-template-columns: repeat(3, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 980px){
+  .pantry-grid{ grid-template-columns: repeat(2, minmax(240px, 1fr)); }
+}
+
+@media (max-width: 640px){
+  .pantry-grid{ grid-template-columns: 1fr; }
+}
+
+.pantry-card{
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+.button-expire{
+  border: 1px solid rgba(255,255,255,0.12);
+  opacity: 0.95;
+}
+
+.button-clear{
+  margin-left: 8px;
+}
+
+
+/* ===== UX FIXES ===== */
+
+/* Make all buttons uniform */
+.button {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+
+.button {
+  font-size: 13px;
+}
+
+/* Expiration pill: force readable text on light backgrounds */
+.expiration-status {
+  color: #141414;      
+}
+
+.expiration-status.expiring-soon {
+  background: #ffe9a6;
+  border-color: #e7b84f;
+}
+
+.expired-actions {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0 16px;
+}
+
+.pantry-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+

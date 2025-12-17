@@ -63,45 +63,54 @@ const App = () => {
     }
   }, []);
 
-  const onUpdate = useCallback(async (name: string) => {
-    
-    const raw = window.prompt(`New quantity for "${name}"?`);
-    if (raw === null) return;
+  const onUpdate = useCallback(
+  async (name: string, updates?: Partial<PantryItemType>) => {
+    // If no updates were provided, fall back to the existing "update quantity" 
+    let payload: Partial<PantryItemType> | null = updates ?? null;
 
-    const nextQty = Number(raw);
-    if (!Number.isFinite(nextQty) || nextQty < 1) {
-      window.alert('Quantity must be a number >= 1');
-      return;
+    if (!payload || Object.keys(payload).length === 0) {
+      const raw = window.prompt(`New quantity for "${name}"?`);
+      if (raw === null) return;
+
+      const nextQty = Number(raw);
+      if (!Number.isFinite(nextQty) || nextQty < 1) {
+        window.alert("Quantity must be a number >= 1");
+        return;
+      }
+
+      payload = { quantity: nextQty };
     }
 
     setBusyName(name);
-    setError('');
+    setError("");
+
     try {
       const res = await fetch(`${API_BASE}/${encodeURIComponent(name)}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ quantity: nextQty }),
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) throw new Error(`Update failed: ${res.status}`);
 
       const updated = await res.json();
-
       setItems((prev) => prev.map((x) => (x.name === name ? updated : x)));
     } catch (e) {
       console.error(e);
-      setError('Update failed. Check server route + request body.');
+      setError("Update failed. Check server route + request body.");
     } finally {
-      setBusyName('');
+      setBusyName("");
     }
-  }, []);
+  }, []
+  );
+
 
   const containerProps = useMemo(
     () => ({
       items,
       loading,
       error,
-      onUpdate: (name: string) => onUpdate(name),
+      onUpdate: (name: string, updates: Partial<PantryItemType>) => onUpdate(name, updates),
       onDelete: (name: string) => onDelete(name),
     }),
     [items, loading, error, onUpdate, onDelete]
