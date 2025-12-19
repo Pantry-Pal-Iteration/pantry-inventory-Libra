@@ -5,7 +5,7 @@
 | **1. CORS Configuration**                  | ✅ Explicit origin (`localhost:5173` or env variable) with `credentials: true` | ✅                        |
 | ------------------------------------------ | ----------------------------------------------------------------------------- | ------------------------ |
 | **2. Session & Cookie**                    | ❓ Using `express-session` with MongoStore; cookies use `secure: isProduction` |  ⚠️ **Needs Action**   
-
+    //Currently using memory cookies for session control which are not the most secure
                                                                                                                              Partially Done - cookies are 
                                                                                                                             set to `secure: isProduction` |
 
