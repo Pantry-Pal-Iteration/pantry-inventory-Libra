@@ -1,42 +1,22 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import './App.css';
 
-<<<<<<< Updated upstream
-import Header from './components/header/Header';
-import Footer from './components/footer/Footer';
-=======
 import Header from "./Components/header/Header";
 import Footer from "./Components/footer/Footer";
 import CreatePantryItemContainer from "./Components/create-container/CreatePantryItemContainer";
 import PantryItemContainer, { type PantryItemType } from "./Components/pantry/PantryItemContainer";
 import LoginPage from "./Components/LoginPage"; // You'll create this
->>>>>>> Stashed changes
 
-import PantryItemContainer from './components/pantry/PantryItemContainer';
-import type { PantryItemType } from './components/pantry/PantryItem';
-import CreatePantryItemContainer from './components/create-container/CreatePantryItemContainer';
-import type { FormFields } from './components/create-container/CreatePantryItemForm';
+// REMOVE these duplicate imports - they conflict with the imports above
+// import PantryItemContainer from './components/pantry/PantryItemContainer';
+// import type { PantryItemType } from './components/pantry/PantryItem';
+// import CreatePantryItemContainer from './components/create-container/CreatePantryItemContainer';
+// import type { FormFields } from './components/create-container/CreatePantryItemForm';
 
-
-const API_BASE = 'http://localhost:3000'
+const API_BASE = 'http://localhost:3000';
 
 const App = () => {
   const [items, setItems] = useState<PantryItemType[]>([]);
-<<<<<<< Updated upstream
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>('');
-  const [busyName, setBusyName] = useState<string>(''); // disables update/delete per-card
-
-  const fetchItems = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const res = await fetch(API_BASE);
-      if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
-      const data = await res.json();
-      if (!Array.isArray(data)) throw new Error('Unexpected inventory response format');
-      setItems(data);
-=======
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [busyId, setBusyId] = useState("");
@@ -150,183 +130,108 @@ const App = () => {
     }
   }, []);
 
-  // Update all fetch calls to include credentials
+  // FIXED: Removed duplicate fetchItems call - use fetchPantryItems instead
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchPantryItems();
+    }
+  }, [isAuthenticated]);
+
+  // FIXED: Single onDelete function (removed duplicate)
   const onDelete = useCallback(async (id: string) => {
     setBusyId(id);
     setError("");
     try {
       const res = await fetch(`${API_BASE}/${encodeURIComponent(id)}`, {
         method: "DELETE",
-        credentials: "include", // Add this
+        credentials: "include",
       });
       if (!res.ok) throw new Error(`Delete failed: ${res.status}`);
       setItems((prev) => prev.filter((x) => x._id !== id));
->>>>>>> Stashed changes
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      setError('Could not load pantry items. Make sure the backend is running.');
+      setError(e.message || 'Could not delete item.');
     } finally {
-      setLoading(false);
+      setBusyId("");
     }
   }, []);
 
-  useEffect(() => {
-    void fetchItems();
-  }, [fetchItems]);
-
-  const onCreated = useCallback((newItem: FormFields) => {
+  // FIXED: Single onCreated function with proper typing
+  const onCreated = useCallback((newItem: PantryItemType) => {
     // put newest on top
-    setItems((prev) => [newItem as PantryItemType, ...prev]);
+    setItems((prev) => [newItem, ...prev]);
   }, []);
 
-  const onDelete = useCallback(async (name: string) => {
-    const ok = window.confirm(`Delete "${name}" from your pantry?`);
-    if (!ok) return;
-
-    setBusyName(name);
-    setError('');
-    try {
-      const res = await fetch(`${API_BASE}/${encodeURIComponent(name)}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error(`Delete failed: ${res.status}`);
-
-      setItems((prev) => prev.filter((x) => x.name !== name));
-    } catch (e) {
-      console.error(e);
-      setError('Delete failed. Check server route + item name.');
-    } finally {
-      setBusyName('');
-    }
-  }, []);
-
-  const onUpdate = useCallback(
-<<<<<<< Updated upstream
-  async (name: string, updates?: Partial<PantryItemType>) => {
-    // If no updates were provided, fall back to the existing "update quantity" 
-    let payload: Partial<PantryItemType> | null = updates ?? null;
-
-    if (!payload || Object.keys(payload).length === 0) {
-      const raw = window.prompt(`New quantity for "${name}"?`);
-      if (raw === null) return;
-
-      const nextQty = Number(raw);
-      if (!Number.isFinite(nextQty) || nextQty < 1) {
-        window.alert("Quantity must be a number >= 1");
-        return;
-=======
-    async (id: string, updates: Partial<PantryItemType>) => {
-      if (!updates || Object.keys(updates).length === 0) return;
-      setBusyId(id);
-      setError("");
-      try {
-        const res = await fetch(`${API_BASE}/${encodeURIComponent(id)}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(updates),
-          credentials: "include", // Add this
-        });
-        if (!res.ok) throw new Error(`Update failed: ${res.status}`);
-        const updated = await res.json();
-        setItems((prev) => prev.map((x) => (x._id === id ? updated : x)));
-      } catch (e) {
-        console.error(e);
-        setError("Update failed. Check your server route + request body.");
-      } finally {
-        setBusyId("");
->>>>>>> Stashed changes
-      }
-
-      payload = { quantity: nextQty };
-    }
-
-    setBusyName(name);
+  // FIXED: Single onUpdate function (removed duplicate and fixed syntax)
+  const onUpdate = useCallback(async (id: string, updates: Partial<PantryItemType>) => {
+    if (!updates || Object.keys(updates).length === 0) return;
+    setBusyId(id);
     setError("");
-
     try {
-      const res = await fetch(`${API_BASE}/${encodeURIComponent(name)}`, {
+      const res = await fetch(`${API_BASE}/${encodeURIComponent(id)}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(updates),
+        credentials: "include",
       });
-
       if (!res.ok) throw new Error(`Update failed: ${res.status}`);
-
       const updated = await res.json();
-      setItems((prev) => prev.map((x) => (x.name === name ? updated : x)));
-    } catch (e) {
+      setItems((prev) => prev.map((x) => (x._id === id ? updated : x)));
+    } catch (e: any) {
       console.error(e);
-      setError("Update failed. Check server route + request body.");
+      setError(e.message || "Update failed. Check your server route + request body.");
     } finally {
-      setBusyName("");
+      setBusyId("");
     }
-  }, []
-  );
-
-<<<<<<< Updated upstream
-=======
-  const onCreated = useCallback((created: PantryItemType) => {
-    setItems((prev) => [created, ...prev.filter((x) => x._id !== created._id)]);
   }, []);
->>>>>>> Stashed changes
 
   const containerProps = useMemo(
     () => ({
       items,
       loading,
+      busyId,
       error,
-      onUpdate: (name: string, updates: Partial<PantryItemType>) => onUpdate(name, updates),
-      onDelete: (name: string) => onDelete(name),
+      onUpdate,
+      onDelete,
     }),
-    [items, loading, error, onUpdate, onDelete]
+    [items, loading, busyId, error, onUpdate, onDelete]
   );
 
   // Render login page if not authenticated
-if (showLogin) {
+  if (showLogin) {
+    return (
+      <div className="app-shell">
+        <Header />
+        <main className="app-main">
+          <LoginPage
+            onLogin={handleLogin}
+            onSignup={handleSignup}
+            error={error}
+            loading={loading}
+          />
+        </main>
+        {/* Footer without props on login page since user is not logged in */}
+        <Footer />
+      </div>
+    );
+  }
+
+  // Update the authenticated view
   return (
     <div className="app-shell">
-      <Header />
+      <Header user={user} onLogout={handleLogout} />
+
       <main className="app-main">
-<<<<<<< Updated upstream
         <div className="app-inner">
           <CreatePantryItemContainer onCreated={onCreated} />
-
-          <PantryItemContainer
-            {...containerProps}
-          />
+          <PantryItemContainer {...containerProps} />
         </div>
-=======
-        <LoginPage
-          onLogin={handleLogin}
-          onSignup={handleSignup}
-          error={error}
-          loading={loading}
-        />
->>>>>>> Stashed changes
       </main>
-      {/* Footer without props on login page since user is not logged in */}
-      <Footer />
+
+      {/* Updated: Pass user and logout function to Footer */}
+      <Footer user={user} onLogout={handleLogout} />
     </div>
   );
-<<<<<<< Updated upstream
 };
 
-export default App;
-=======
-}
-
-// Update the authenticated view (around line 148-163):
-return (
-  <div className="app-shell">
-    <Header user={user} onLogout={handleLogout} />
-
-    <main className="app-main">
-      <div className="app-inner">
-        <CreatePantryItemContainer onCreated={onCreated} />
-        <PantryItemContainer {...containerProps} />
-      </div>
-    </main>
-
-    {/* Updated: Pass user and logout function to Footer */}
-    <Footer user={user} onLogout={handleLogout} />
-  </div>
-)};
->>>>>>> Stashed changes
+export default App;  // FIXED: Added export default
