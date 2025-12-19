@@ -31,6 +31,9 @@ const CreatePantryItemForm = ({ onCreated }: Props) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
+
+        //Neccessary for item to be created with credentials in order for the fetch call to work properly here
+        credentials: 'include'
       });
 
       if (!response.ok) {

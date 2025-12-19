@@ -8,7 +8,15 @@ import './footer.css';
 //   )
 // }
 
-export default function Footer() {
+interface FooterProps {
+  user?: string | null;
+  onLogout?: () => void;
+}
+
+
+
+const Footer: React.FC<FooterProps> = ({ user, onLogout }) => {
+
   const currentYear = new Date().getFullYear();
 
   return (
@@ -18,6 +26,15 @@ export default function Footer() {
           &copy; {currentYear} BLOODROOT-FCNY2 <span>🫜</span>
         </p>
         <nav className='footer-nav'>
+
+           {user && onLogout && (
+          <button 
+            className="logout-btn"
+            onClick={onLogout}
+          >
+            Logout
+          </button>
+        )}
           {/* <Link to="/" className="footer-link">Home</Link>
           <span>|</span>
           <Link to="/inventory" className="footer-link">Inventory</Link> */}
@@ -27,3 +44,4 @@ export default function Footer() {
     </footer>
   );
 }
+export default Footer;
