@@ -1,5 +1,5 @@
 import "./pantry.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { PantryItemType } from "./PantryItemContainer";
 
 interface PantryItemProps {
@@ -34,13 +34,29 @@ function getExpirationStatus(expirationDate?: string) {
   return "fresh";
 }
 
-export default function PantryItem({ pantryItem, onDelete, onUpdate, onMarkExpired }: PantryItemProps) {
+export default function PantryItem({
+  pantryItem,
+  onDelete,
+  onUpdate,
+  onMarkExpired,
+}: PantryItemProps) {
   const { _id, name, category, quantity, unitType, threshold, expirationDate } = pantryItem;
 
   const expirationStatus = getExpirationStatus(expirationDate);
 
   const [isEditing, setIsEditing] = useState(false);
   const [newQty, setNewQty] = useState<number>(quantity);
+
+
+  useEffect(() => {
+    setNewQty(quantity);
+  }, [quantity]);
+
+  const handleDelete = async () => {
+    const ok = window.confirm(`Delete "${name}" from your pantry?`);
+    if (!ok) return;
+    await onDelete(_id);
+  };
 
   return (
     <article className="pantry-card">
@@ -53,9 +69,7 @@ export default function PantryItem({ pantryItem, onDelete, onUpdate, onMarkExpir
         {threshold && <li className="threshold">Buy more if you have less than {threshold}</li>}
 
         {expirationDate && (
-          <li className="expirationDate">
-            Expiration date: {formatExpirationDate(expirationDate)}
-          </li>
+          <li className="expirationDate">Expiration date: {formatExpirationDate(expirationDate)}</li>
         )}
 
         {expirationStatus !== "no-date" && (
@@ -70,10 +84,12 @@ export default function PantryItem({ pantryItem, onDelete, onUpdate, onMarkExpir
       {isEditing && (
         <div className="edit-row">
           <input
+            className="qty-input"
             type="number"
             value={newQty}
             onChange={(e) => setNewQty(Number(e.target.value))}
           />
+
           <button
             className="button"
             onClick={() => {
@@ -88,19 +104,11 @@ export default function PantryItem({ pantryItem, onDelete, onUpdate, onMarkExpir
       )}
 
       <div className="button-container">
-        <button
-          className="button"
-          onClick={() => setIsEditing((prev) => !prev)}
-          type="button"
-        >
+        <button className="button" onClick={() => setIsEditing((prev) => !prev)} type="button">
           {isEditing ? "Cancel" : "Update Item"}
         </button>
 
-        <button
-          className="button button--danger"
-          onClick={() => onDelete(_id)}
-          type="button"
-        >
+        <button className="button" onClick={handleDelete} type="button">
           Delete Item
         </button>
 
