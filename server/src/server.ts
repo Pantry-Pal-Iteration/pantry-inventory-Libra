@@ -18,6 +18,45 @@
 */
 
 
+/* Add to git ignore:
+# .gitignore
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local */
+
+
+//Handling session secret:
+
+/*Generate a strong secret and then add to .env:
+# Generate random 32-character secret:
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+# Or using openssl:
+openssl rand -base64 32
+
+# Or in Node REPL:
+require('crypto').randomBytes(32).toString('hex') */
+
+//Note: you can also have different dev environments:
+/*Different Environments:
+
+Development .env:
+env
+SESSION_SECRET=dev-secret-change-in-production
+MONGODB_URI=mongodb://localhost:27017/pantry
+NODE_ENV=development
+
+Production .env (on server):
+env
+SESSION_SECRET=real-production-secret
+MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/pantry
+NODE_ENV=production
+*/
+
+//For this app, Express session is recommended over JWT Token
+
 import dotenv, { config } from 'dotenv';
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
